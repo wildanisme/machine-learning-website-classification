@@ -1,0 +1,10 @@
+requests
+flask-bootstrap
+beautifulsoup4
+pandas
+sastrawi
+nltk
+numpy
+matplotlib
+scikit-learn
+flask
