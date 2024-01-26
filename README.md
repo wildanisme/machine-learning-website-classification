@@ -1,3 +1,5 @@
+# About
+Projek ini merupakan implementasi sederhana Algoritma K-NN pada aplikasi Machine Learning untuk mengklasifikasikan Website. 
 # Prerequiresite
 ```
 python 3.X
