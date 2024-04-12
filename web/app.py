@@ -76,15 +76,26 @@ def preprocessing(text):
     text = lemmatizer.lemmatize(text) # lemmatization kata
     return text
 
-@app.get('/search')
-def search():
-    # q = request.form.get('q')
-    # print(q)
+
+@app.route('/', methods=['GET'])
+def index(domain=None):
+    # if request.method == 'POST':
+    domain = request.form.get('domain')
+    return render_template('home.html',
+                           site='Home',
+                           title='Tugas Akhir Program Studi Ilmu Komputer FMIPA Universitas Pakuan',
+                           domain=domain)
+
+
+# prediksi url yang dimasukkan
+
+@app.route('/prediksi', methods=['GET'])
+def predict():
+    # if request.method == 'POST':
     domain = request.args.get('domain')
-    domain = "http://"+domain
+    domain = 'http://'+domain
     try:
         url_input = requests.get(domain)
-        print(url_input)
         scrape = bs(url_input.content, 'html.parser')
         page = scrape
 
@@ -119,72 +130,6 @@ def search():
     except:
         pred_test =  "Tidak Dapat Mengekstrak Domain"
         title_page =  "Halaman yang Anda Cari Tidak Ditemukan"
-
-    return render_template('search.html',
-                            site='Home',
-                            title='Tugas Akhir Program Studi Ilmu Komputer FMIPA Universitas Pakuan',
-                            domain = domain,
-                            page=title_page,
-                            content_page = content_page,
-                            predict = pred_test,
-                            prep_text=prep_text,
-                            tfidf=X_vec_test,
-                            max_prob=max_prob)
-
-
-@app.route('/', methods=['GET', 'POST'])
-def index(domain=None):
-    if request.method == 'POST':
-        domain = request.form.get('domain')
-    return render_template('home.html',
-                           site='Home',
-                           title='Tugas Akhir Program Studi Ilmu Komputer FMIPA Universitas Pakuan',
-                           domain=domain)
-
-
-# prediksi url yang dimasukkan
-
-@app.route('/prediksi', methods=['POST'])
-def predict():
-    if request.method == 'POST':
-        domain = request.form.get('domain')
-        domain = 'http://'+domain
-        try:
-            url_input = requests.get(domain)
-            scrape = bs(url_input.content, 'html.parser')
-            page = scrape
-
-            # mengambil konten pada web
-            content_page = page.get_text(separator=" ", strip=True)
-
-            # mengambil title pada page
-            title_page = page.title.string
-            print(f"Judul : {title_page}")
-
-            # Preprocessing
-            prep_text = preprocessing(str(title_page.string))
-            print(f"Preprocessing : {prep_text}")
-
-            # feature engineer
-            X_vec_test = tfidf.transform([prep_text])
-            print(f"TF-IDF : \n{X_vec_test}")
-
-            # prediksi model
-            pred_test = model.predict(X_vec_test)[0]
-            print(f"Prediksi oleh Model : {pred_test}")
-            
-            prob = model.predict_proba(X_vec_test)
-            print(f"Probabilitas : {prob}")
-            print(f"Nilai Akurasi Prediksi : {max(prob[0])}")
-            max_prob = int(max(prob[0]) * 100)
-            #   dump()
-
-            #   if max(prob[0]) <= 0.75 :
-            #     pred_test =  "Tidak Diketahui"
-
-        except:
-            pred_test =  "Tidak Dapat Mengekstrak Domain"
-            title_page =  "Halaman yang Anda Cari Tidak Ditemukan"
 
     return render_template('predict.html',
                             site='Hasil Periksa',
