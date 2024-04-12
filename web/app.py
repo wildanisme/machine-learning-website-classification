@@ -91,7 +91,6 @@ def index(domain=None):
 
 @app.route('/prediksi', methods=['GET'])
 def predict():
-    # if request.method == 'POST':
     domain = request.args.get('domain')
     domain = 'http://'+domain
     try:
